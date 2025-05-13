@@ -1,0 +1,17 @@
+# Teltonika Server Configuration
+
+# Server configuration
+server:
+  # Host to bind the server to
+  host: "0.0.0.0"
+  # Port to listen on
+  port: 5027
+
+# ThingsBoard integration configuration
+thingsboard:
+  # ThingsBoard HTTP integration URL
+  http_integration_url: "https://thingsboard.cloud/api/v1/integrations/http/YOUR_HTTP_INTEGRATION_URL"
+  # Authentication header name
+  auth_header_name: "custom-auth-header"
+  # Authentication header value
+  auth_header_value: "custom-auth-header-value"

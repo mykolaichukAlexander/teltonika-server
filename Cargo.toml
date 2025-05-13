@@ -1,0 +1,31 @@
+[package]
+name = "teltonika-server"
+version = "0.1.0"
+edition = "2021"
+description = "A server for Teltonika GPS trackers"
+authors = ["Alexander Mykolaichuk mykolaichukalexander@gmail.com"]
+license = "Apache-2.0"
+
+
+[dependencies]
+env_logger = "0.11.8"
+tokio = { version = "1.45.0", features = ["full"] }
+log = "0.4.27"
+serde = { version = "1.0.219", features = ["derive"] }
+# Use reqwest with rustls instead of openssl
+reqwest = { version = "0.12.15", default-features = false, features = ["rustls-tls", "json"] }
+serde_json = "1.0.140"
+teltonika-rs = "0.1.1"
+# Configuration
+serde_yaml = "0.9.32"
+
+[package.metadata.deb]
+maintainer = "Your Name mykolaichukalexander@gmail.com>"
+copyright = "2025, mykolaichukalexander@gmail.com"
+depends = "$auto"
+section = "net"
+priority = "optional"
+assets = [
+    ["target/release/teltonika-server", "usr/bin/", "755"],
+    ["README.md", "usr/share/doc/teltonika-server/README.md", "644"],
+]
