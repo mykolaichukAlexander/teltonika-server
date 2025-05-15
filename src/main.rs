@@ -3,20 +3,44 @@ mod handlers;
 mod services;
 mod config;
 
-use log::info;
+use log::{info, debug};
 use tokio::net::TcpListener;
 use crate::config::Config;
+use clap::Parser;
+use std::env;
+
+/// Command line arguments for the Teltonika server
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Path to the configuration file
+    #[arg(short, long)]
+    config: Option<String>,
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Set default log level if RUST_LOG is not set
-    if std::env::var("RUST_LOG").is_err() {
-        std::env::set_var("RUST_LOG", "info");
+    if env::var("RUST_LOG").is_err() {
+        env::set_var("RUST_LOG", "info");
     }
     env_logger::init();
 
+    // Parse command line arguments
+    let args = Args::parse();
+
+    // Determine config path with the following priority:
+    // 1. Command line argument
+    // 2. Environment variable
+    // 3. Default path
+    let config_path = args.config
+        .or_else(|| env::var("TELTONIKA_CONFIG_PATH").ok())
+        .unwrap_or_else(|| "/etc/teltonika-server/config.json".to_string());
+
+    debug!("Using configuration file: {}", config_path);
+
     // Load configuration
-    let config = Config::load("config.yaml")?;
+    let config = Config::load(&config_path)?;
 
     info!("Starting Teltonika server...");
     let bind_address = format!("{}:{}", config.server.host, config.server.port);

@@ -26,12 +26,12 @@ pub struct Config {
 impl Config {
     pub fn load(config_path: &str) -> Result<Self, String> {
         let path = Path::new(config_path);
-        
+
         if !path.exists() {
             error!("Configuration file not found at {}", config_path);
             return Err("Configuration file not found".to_string());
         }
-        
+
         let mut file = match File::open(path) {
             Ok(f) => f,
             Err(e) => {
@@ -39,20 +39,20 @@ impl Config {
                 return Err("Failed to open configuration file".to_string());
             }
         };
-        
+
         let mut contents = String::new();
         if let Err(e) = file.read_to_string(&mut contents) {
             error!("Failed to read configuration file: {}, using default configuration", e);
             return Err("Failed to read configuration file".to_string());       
         }
-        
-        match serde_yaml::from_str(&contents) {
+
+        match serde_json::from_str(&contents) {
             Ok(config) => {
                 info!("Configuration loaded successfully from {}", config_path);
-                config
+                Ok(config)
             },
             Err(e) => {
-                error!("Failed to parse configuration file: {}, using default configuration", e);
+                error!("Failed to parse configuration file: {},\n content {}, using default configuration", e, contents);
                 Err("Failed to parse configuration file".to_string())       
             }
         }

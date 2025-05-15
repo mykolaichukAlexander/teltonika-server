@@ -12,20 +12,25 @@ env_logger = "0.11.8"
 tokio = { version = "1.45.0", features = ["full"] }
 log = "0.4.27"
 serde = { version = "1.0.219", features = ["derive"] }
-# Use reqwest with rustls instead of openssl
 reqwest = { version = "0.12.15", default-features = false, features = ["rustls-tls", "json"] }
 serde_json = "1.0.140"
 teltonika-rs = "0.1.1"
-# Configuration
-serde_yaml = "0.9.32"
+# Configuration and command-line argument parsing
+clap = { version = "4.5.4", features = ["derive"] }
 
 [package.metadata.deb]
-maintainer = "Your Name mykolaichukalexander@gmail.com>"
-copyright = "2025, mykolaichukalexander@gmail.com"
-depends = "$auto"
-section = "net"
+maintainer = "Alexander Mykolaichuk mykolaichukalexander@gmail.com"
+copyright = "2025, Alexander Mykolaichuk"
+license-file = ["LICENSE", "4"]
+extended-description = "Service for receiving and parsing teltonika codec8 msgs and send it to Thingsboard"
+depends = "$auto"  # Automatically detect dependencies
+section = "utility"  # Package category
 priority = "optional"
 assets = [
+    # Format: ["source", "destination", "permissions"]
     ["target/release/teltonika-server", "usr/bin/", "755"],
-    ["README.md", "usr/share/doc/teltonika-server/README.md", "644"],
+    ["README.md", "usr/share/doc/teltonika-server/README", "644"],
+    ["config.json", "etc/teltonika-server/", "644"], # Glob patterns
+    ["LICENSE", "usr/share/doc/teltonika-server/", "644"],
+    ["teltonika-server.service", "lib/systemd/system/", "644"],
 ]

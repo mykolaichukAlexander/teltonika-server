@@ -39,36 +39,44 @@ cargo build --release
 ## Usage
 
 ```bash
-# Run with default settings
+# Run with default settings (looks for /etc/teltonika-server/config.json)
 ./teltonika-server
+
+# Specify a custom configuration file path
+./teltonika-server --config /path/to/your/config.json
+# or using the short option
+./teltonika-server -c /path/to/your/config.json
+
+# Set configuration path using environment variable
+TELTONIKA_CONFIG_PATH=/path/to/your/config.json ./teltonika-server
 
 # Set custom log level
 RUST_LOG=debug ./teltonika-server
 ```
 
-The server looks for a `config.yaml` file in the current directory. If not found, it uses the default configuration (listening on `0.0.0.0:5027` and using the default ThingsBoard integration settings).
+The server determines the configuration file path in the following order of priority:
+1. Command-line argument (`--config` or `-c`)
+2. Environment variable (`TELTONIKA_CONFIG_PATH`)
+3. Default path (`/etc/teltonika-server/config.json`)
 
 ## Configuration
 
-The server can be configured using a YAML configuration file (`config.yaml`). The configuration file should be placed in the same directory as the executable.
+The server can be configured using a JSON configuration file. You can specify the path to this file using command-line arguments or environment variables as shown in the Usage section.
 
 ### Configuration Options
 
-```yaml
-# Server configuration
-server:
-  # Host to bind the server to
-  host: "0.0.0.0"
-  # Port to listen on
-  port: 5027
-
-# ThingsBoard integration configuration
-thingsboard:
-  # ThingsBoard HTTP integration URL
-  http_integration_url: "https://thingsboard.cloud/api/v1/integrations/http/your-integration-token"
-  # Authentication header value
-  auth_header_name: "your-auth-token",
-  auth_header_value: "your-auth-token-value"
+```json
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 5027
+  },
+  "thingsboard": {
+    "http_integration_url": "https://thingsboard.cloud/api/v1/integrations/http/your-integration-token",
+    "auth_header_name": "your-auth-token",
+    "auth_header_value": "your-auth-token-value"
+  }
+}
 ```
 
 If the configuration file is not found or cannot be parsed, the server will use default values.
