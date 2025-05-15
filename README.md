@@ -54,6 +54,25 @@ TELTONIKA_CONFIG_PATH=/path/to/your/config.json ./teltonika-server
 RUST_LOG=debug ./teltonika-server
 ```
 
+### Logging
+
+When running the server manually, logs are output to the console (stderr). You can control the log level using the `RUST_LOG` environment variable.
+
+When installed as a Debian package and running as a systemd service, logs are written to:
+- Standard output: `/var/log/teltonika-server/teltonika-server.log`
+- Standard error: `/var/log/teltonika-server/teltonika-server.error.log`
+
+You can view the logs using:
+```bash
+# View standard output logs
+sudo cat /var/log/teltonika-server/teltonika-server.log
+# or follow the logs in real-time
+sudo tail -f /var/log/teltonika-server/teltonika-server.log
+
+# View error logs
+sudo cat /var/log/teltonika-server/teltonika-server.error.log
+```
+
 The server determines the configuration file path in the following order of priority:
 1. Command-line argument (`--config` or `-c`)
 2. Environment variable (`TELTONIKA_CONFIG_PATH`)

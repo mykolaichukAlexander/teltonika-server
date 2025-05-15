@@ -1,0 +1,19 @@
+[Unit]
+Description=Teltonika GPS Tracker Server
+After=network.target
+
+[Service]
+Type=simple
+User=teltonika-server
+Group=teltonika-server
+ExecStart=/usr/bin/teltonika-server
+WorkingDirectory=/etc/teltonika-server
+Environment=RUST_LOG=info
+Environment=TELTONIKA_CONFIG_PATH=/etc/teltonika-server/config.json
+StandardOutput=append:/var/log/teltonika-server/teltonika-server.log
+StandardError=append:/var/log/teltonika-server/teltonika-server.error.log
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target 

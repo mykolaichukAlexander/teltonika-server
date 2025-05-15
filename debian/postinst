@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Create teltonika-server user and group if they don't exist
+if ! getent group teltonika-server >/dev/null; then
+    addgroup --system teltonika-server
+fi
+
+if ! getent passwd teltonika-server >/dev/null; then
+    adduser --system --home /var/lib/teltonika-server --ingroup teltonika-server teltonika-server
+fi
+
+# Ensure log directory exists and has correct permissions
+mkdir -p /var/log/teltonika-server
+chown -R teltonika-server:teltonika-server /var/log/teltonika-server
+chmod 755 /var/log/teltonika-server
+
+# Enable and start the service
+systemctl daemon-reload
+systemctl enable teltonika-server.service
+systemctl start teltonika-server.service || true
+
+exit 0
