@@ -24,7 +24,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if env::var("RUST_LOG").is_err() {
         env::set_var("RUST_LOG", "info");
     }
-    env_logger::init();
+    
+    // Initialize logger with stdout target for proper log separation
+    env_logger::Builder::from_env(env_logger::Env::default())
+        .target(env_logger::Target::Stdout) // Send logs to stdout instead of stderr
+        .init();
 
     // Parse command line arguments
     let args = Args::parse();

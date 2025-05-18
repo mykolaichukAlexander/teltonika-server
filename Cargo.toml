@@ -35,4 +35,4 @@ assets = [
     ["teltonika-server.service", "lib/systemd/system/", "644"],
 ]
 
-maintainer-scripts = "/app/debian"
+maintainer-scripts = "debian"

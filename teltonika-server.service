@@ -11,7 +11,7 @@ WorkingDirectory=/etc/teltonika-server
 Environment=RUST_LOG=info
 Environment=TELTONIKA_CONFIG_PATH=/etc/teltonika-server/config.json
 StandardOutput=append:/var/log/teltonika-server/teltonika-server.log
-StandardError=append:/var/log/teltonika-server/teltonika-server.error.log
+StandardError=append:/var/log/teltonika-server/teltonika-server.log
 Restart=always
 RestartSec=5
 
