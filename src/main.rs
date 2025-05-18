@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let bind_address = format!("{}:{}", config.server.host, config.server.port);
     let listener = TcpListener::bind(&bind_address).await?;
     info!("Server listening on {}", bind_address);
-    info!("Thingsboard url will be user {}", config.thingsboard.http_integration_url);
+    info!("API endpoint URL: {}", config.api_integration.http_endpoint_url);
 
     // Create a shared configuration for handlers
     let config_clone = config.clone();

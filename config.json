@@ -3,8 +3,8 @@
     "host": "0.0.0.0",
     "port": 5027
   },
-  "thingsboard": {
-    "http_integration_url": "https://thingsboard.cloud/api/v1/integrations/http/YOUR_HTTP_INTEGRATION_URL",
+  "api_integration": {
+    "http_endpoint_url": "https://thingsboard.cloud/api/v1/integrations/http/YOUR_HTTP_INTEGRATION_URL",
     "auth_header_name": "custom-auth-header",
     "auth_header_value": "custom-auth-header-value"
   }

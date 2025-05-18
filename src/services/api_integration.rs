@@ -1,8 +1,8 @@
 use serde_json::json;
 use teltonika_rs::protocol::AVLData;
-use crate::config::ThingsboardConfig;
+use crate::config::ApiIntegrationConfig;
 
-pub async fn send_to_thingsboard(record: &AVLData, imei: &str, config: &ThingsboardConfig) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn send_to_api(record: &AVLData, imei: &str, config: &ApiIntegrationConfig) -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
 
     // Create a map for IO elements
@@ -52,7 +52,7 @@ pub async fn send_to_thingsboard(record: &AVLData, imei: &str, config: &Thingsbo
     });
 
     client
-        .post(&config.http_integration_url)
+        .post(&config.http_endpoint_url)
         .header("Content-Type", "application/json")
         .header(&config.auth_header_name, &config.auth_header_value)
         .json(&payload)

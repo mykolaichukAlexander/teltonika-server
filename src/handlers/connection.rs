@@ -6,7 +6,7 @@ use tokio::net::TcpStream;
 use teltonika_rs::parser::parse_teltonika_codec_8;
 use teltonika_rs::parser::parse_teltonika_imei;
 use crate::models::ConnectionState;
-use crate::services::thingsboard::send_to_thingsboard;
+use crate::services::api_integration::send_to_api;
 use crate::config::Config;
 
 // First, add this new function to detect if a message is an IMEI message
@@ -156,8 +156,8 @@ pub async fn handle_connection(mut socket: TcpStream, addr: SocketAddr, config: 
 
                                     for record in teltonika_data.1.avl_data {
                                         info!("Record: {:?}", record);
-                                        if let Err(e) = send_to_thingsboard(&record, imei, &config.thingsboard).await {
-                                            error!("Failed to send to ThingsBoard: {}", e);
+                                        if let Err(e) = send_to_api(&record, imei, &config.api_integration).await {
+                                            error!("Failed to send to API endpoint: {}", e);
                                         }
                                     }
 

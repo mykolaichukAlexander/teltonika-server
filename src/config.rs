@@ -11,8 +11,8 @@ pub struct ServerConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ThingsboardConfig {
-    pub http_integration_url: String,
+pub struct ApiIntegrationConfig {
+    pub http_endpoint_url: String,
     pub auth_header_name: String,
     pub auth_header_value: String,
 }
@@ -20,7 +20,7 @@ pub struct ThingsboardConfig {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {
     pub server: ServerConfig,
-    pub thingsboard: ThingsboardConfig,
+    pub api_integration: ApiIntegrationConfig,
 }
 
 impl Config {

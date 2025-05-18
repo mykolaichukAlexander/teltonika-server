@@ -1,2 +1,2 @@
-pub mod thingsboard;
+pub mod api_integration;
 

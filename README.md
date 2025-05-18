@@ -1,17 +1,17 @@
 # Teltonika Server
 
-A server for Teltonika GPS trackers that receives data from devices and forwards it to ThingsBoard IoT platform.
+A server for Teltonika GPS trackers that receives data from devices and forwards it to a configurable HTTP API endpoint.
 
 ## Description
 
-Teltonika Server is a lightweight, high-performance TCP server written in Rust that handles connections from Teltonika GPS tracking devices. It processes the binary data sent by these devices, parses it according to the Teltonika protocols (primarily Codec8), and forwards the structured data to a ThingsBoard IoT platform instance.
+Teltonika Server is a lightweight, high-performance TCP server written in Rust that handles connections from Teltonika GPS tracking devices. It processes the binary data sent by these devices, parses it according to the Teltonika protocols (primarily Codec8), and forwards the structured data to a configurable HTTP API endpoint.
 
 ## Features
 
 - TCP server listening on port 5027 (standard Teltonika port)
 - IMEI-based device authentication
 - Support for Teltonika Codec8 protocol
-- Real-time data forwarding to ThingsBoard
+- Real-time data forwarding to configurable HTTP API endpoints
 - Proper acknowledgment handling for device messages
 - Asynchronous processing using Tokio runtime
 
@@ -90,10 +90,10 @@ The server can be configured using a JSON configuration file. You can specify th
     "host": "0.0.0.0",
     "port": 5027
   },
-  "thingsboard": {
-    "http_integration_url": "https://thingsboard.cloud/api/v1/integrations/http/your-integration-token",
-    "auth_header_name": "your-auth-token",
-    "auth_header_value": "your-auth-token-value"
+  "api_integration": {
+    "http_endpoint_url": "https://your-api-endpoint-url",
+    "auth_header_name": "your-auth-header-name",
+    "auth_header_value": "your-auth-header-value"
   }
 }
 ```
