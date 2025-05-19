@@ -14,9 +14,8 @@ log = "0.4.27"
 serde = { version = "1.0.219", features = ["derive"] }
 reqwest = { version = "0.12.15", default-features = false, features = ["rustls-tls", "json"] }
 serde_json = "1.0.140"
-teltonika-rs = "0.1.1"
-# Configuration and command-line argument parsing
 clap = { version = "4.5.4", features = ["derive"] }
+nom-teltonika = { version = "*", features = ["serde", "tokio"] }
 
 [package.metadata.deb]
 maintainer = "Alexander Mykolaichuk mykolaichukalexander@gmail.com"

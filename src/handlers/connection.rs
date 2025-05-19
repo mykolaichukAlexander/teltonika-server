@@ -2,9 +2,6 @@ use log::{error, info};
 use std::net::SocketAddr;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
-
-use teltonika_rs::parser::parse_teltonika_codec_8;
-use teltonika_rs::parser::parse_teltonika_imei;
 use crate::models::ConnectionState;
 use crate::services::api_integration::send_to_api;
 use crate::config::Config;
@@ -21,7 +18,7 @@ fn is_imei_message(data: &[u8]) -> bool {
     }
 
     // Try to parse - if it succeeds, it's an IMEI message
-    match parse_teltonika_imei(data) {
+    match nom_teltonika::parser::imei(data) {
         Ok(_) => true,
         Err(_) => false,
     }
@@ -101,7 +98,7 @@ pub async fn handle_connection(mut socket: TcpStream, addr: SocketAddr, config: 
 
                 match message_type {
                     MessageType::Imei => {
-                        match parse_teltonika_imei(data) {
+                        match nom_teltonika::parser::imei(data) {
                             Ok(imei) => {
                                 let imei_str = imei.1.to_string();
                                 info!("Received IMEI: {}", imei_str);
@@ -149,12 +146,13 @@ pub async fn handle_connection(mut socket: TcpStream, addr: SocketAddr, config: 
 
                         if let Some(imei) = &state.imei {
                             // We have an IMEI, so process as data
-                            match parse_teltonika_codec_8(data) {
+                            match nom_teltonika::parser::tcp_frame(data) {
                                 Ok(teltonika_data) => {
-                                    let records_len = teltonika_data.1.avl_data.len();
+                                    let avl_data = teltonika_data.1.unwrap_avl();
+                                    let records_len = avl_data.records.len();
                                     info!("Parsed {} records for IMEI {}", records_len, imei);
 
-                                    for record in teltonika_data.1.avl_data {
+                                    for record in avl_data.records {
                                         info!("Record: {:?}", record);
                                         if let Err(e) = send_to_api(&record, imei, &config.api_integration).await {
                                             error!("Failed to send to API endpoint: {}", e);

@@ -1,57 +1,45 @@
-use serde_json::json;
-use teltonika_rs::protocol::AVLData;
+use nom_teltonika::{AVLRecord, AVLEventIOValue};
+use serde_json::{json, Value};
+use std::collections::HashMap;
 use crate::config::ApiIntegrationConfig;
 
-pub async fn send_to_api(record: &AVLData, imei: &str, config: &ApiIntegrationConfig) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn send_to_api(record: &AVLRecord, imei: &str, config: &ApiIntegrationConfig) -> Result<(), Box<dyn std::error::Error>> {
     let client = reqwest::Client::new();
 
-    // Create a map for IO elements
-    let mut io_elements = serde_json::Map::new();
-
-    // Add 1-byte IO elements
-    if let Some(elements) = &record.io.io_1_byte_elements {
-        for element in elements {
-            io_elements.insert(format!("io_1b_{}", element.id), json!(element.value));
-        }
-    }
-
-    // Add 2-byte IO elements
-    if let Some(elements) = &record.io.io_2_byte_elements {
-        for element in elements {
-            io_elements.insert(format!("io_2b_{}", element.id), json!(element.value));
-        }
-    }
-
-    // Add 4-byte IO elements
-    if let Some(elements) = &record.io.io_4_byte_elements {
-        for element in elements {
-            io_elements.insert(format!("io_4b_{}", element.id), json!(element.value));
-        }
-    }
-
-    // Add 8-byte IO elements
-    if let Some(elements) = &record.io.io_8_byte_elements {
-        for element in elements {
-            io_elements.insert(format!("io_8b_{}", element.id), json!(element.value));
-        }
+    // Transform io_events into a map of id -> value
+    let mut io_elements = HashMap::new();
+    for event in &record.io_events {
+        let value = match &event.value {
+            AVLEventIOValue::U8(v) => Value::from(*v),
+            AVLEventIOValue::U16(v) => Value::from(*v),
+            AVLEventIOValue::U32(v) => Value::from(*v),
+            AVLEventIOValue::U64(v) => Value::from(*v),
+            AVLEventIOValue::Variable(bytes) => {
+                // Convert byte array to string for ASCII data
+                match String::from_utf8(bytes.clone()) {
+                    Ok(s) => Value::String(s),
+                    Err(_) => Value::String(format!("{:?}", bytes)), // Fallback to debug representation
+                }
+            }
+        };
+        io_elements.insert(event.id.to_string(), value);
     }
 
     let payload = json!({
         "imei": imei,
-        "timestamp": record.timestamp,
+        "timestamp": record.timestamp.timestamp_millis(),
         "priority": record.priority,
-        "longitude": record.gps.longitude,
-        "latitude": record.gps.latitude,
-        "altitude": record.gps.altitude,
-        "angle": record.gps.angle,
-        "satellites": record.gps.visible_satellites,
-        "speed": record.gps.speed,
-        "event_io_id": record.io.event_io_id,
-        "total_io": record.io.number_of_total_io,
+        "longitude": record.longitude,
+        "latitude": record.latitude,
+        "altitude": record.altitude,
+        "angle": record.angle,
+        "satellites": record.satellites,
+        "speed": record.speed,
+        "generation_type": record.generation_type,
         "io_elements": io_elements
     });
 
-    client
+    let resp = client
         .post(&config.http_endpoint_url)
         .header("Content-Type", "application/json")
         .header(&config.auth_header_name, &config.auth_header_value)
@@ -59,5 +47,11 @@ pub async fn send_to_api(record: &AVLData, imei: &str, config: &ApiIntegrationCo
         .send()
         .await?;
 
+    if !resp.status().is_success() {
+        let error_msg = format!("Error sending data to API: {}", resp.status());
+        // println!("{}", error_msg);
+        // println!("HTTP request failed, status code:");
+        return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, error_msg)));
+    }
     Ok(())
 } 
